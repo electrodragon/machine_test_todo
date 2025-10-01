@@ -1,3 +1,4 @@
+import { useState, useEffect } from "react";
 import {
   Container,
   Box,
@@ -6,18 +7,40 @@ import {
   Button,
   Link,
   Paper,
+  Alert,
 } from "@mui/material";
 
 export default function LoginScreen() {
+  const [successMessage, setSuccessMessage] = useState<string | null>(null);
+
+  useEffect(() => {
+    const msg = localStorage.getItem("registerSuccess");
+    if (msg) {
+      setSuccessMessage(msg);
+      localStorage.removeItem("registerSuccess"); // remove after reading
+    }
+  }, []);
+
   return (
     <Container
       maxWidth="sm"
-      sx={{ display: "flex", justifyContent: "center", alignItems: "center", minHeight: "100vh" }}
+      sx={{
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+        minHeight: "100vh",
+      }}
     >
       <Paper elevation={3} sx={{ p: 4, borderRadius: 2, width: "100%" }}>
         <Typography variant="h4" align="center" gutterBottom>
           Login
         </Typography>
+
+        {successMessage && (
+          <Alert severity="success" sx={{ mb: 2 }}>
+            {successMessage}
+          </Alert>
+        )}
 
         <Box
           component="form"
