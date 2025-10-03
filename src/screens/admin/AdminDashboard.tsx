@@ -17,37 +17,39 @@ import {
 } from "@mui/material";
 import { ListAlt } from "@mui/icons-material";
 import { getEnv } from "../../utils/env-util";
+import { useNavigate } from "react-router-dom";
 
 export const AdminDashboard: React.FC = () => {
-  const handleLogout = () => {
-    console.log("Logging out...");
+  const navigate = useNavigate();
+
+  const handleLogout = async () => {
+    localStorage.removeItem("currentUser");
+    await navigate("/login", { replace: true });
   };
 
-  const {
-    data: users,
-    error: usersError,
-    isLoading: usersLoading,
-  } = useSWR(`${getEnv("VITE_MOCK_SERVER_BASE_URL")}/users`,
+  const { data: users, error: usersError, isLoading: usersLoading } = useSWR(
+    `${getEnv("VITE_MOCK_SERVER_BASE_URL")}/users`,
     (url: string) => fetch(url).then((res) => res.json())
   );
 
-  const {
-    data: todos,
-    error: todosError,
-    isLoading: todosLoading,
-  } = useSWR(`${getEnv("VITE_MOCK_SERVER_BASE_URL")}/todo`,
+  const { data: todos, error: todosError, isLoading: todosLoading } = useSWR(
+    `${getEnv("VITE_MOCK_SERVER_BASE_URL")}/todo`,
     (url: string) => fetch(url).then((res) => res.json())
   );
 
   const error = usersError || todosError;
   const isLoading = usersLoading || todosLoading;
 
-  const merged = (users || []).map(u => ({
+  const merged = (users || []).map((u: any) => ({
     ...u,
-    totalTodos: (todos || []).filter((t) => t.assignedUser === u.id && t.status !== 'done'),
+    totalTodos: (todos || []).filter(
+      (t: any) => t.assignedUser === u.id && t.status !== "done"
+    ),
   }));
 
-  console.log(merged);
+  const handleManage = (userId: number, userName: string) => {
+    navigate("/manage-user-todos", { state: { userId, userName } });
+  };
 
   return (
     <>
@@ -94,6 +96,7 @@ export const AdminDashboard: React.FC = () => {
                         variant="outlined"
                         startIcon={<ListAlt />}
                         size="small"
+                        onClick={() => handleManage(user.id, user.name)}
                       >
                         Manage
                       </Button>
