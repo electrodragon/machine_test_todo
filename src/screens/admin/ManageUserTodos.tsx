@@ -233,8 +233,8 @@ export const UserTodos: React.FC = () => {
                   </TableRow>
                 </TableHead>
                 <TableBody>
-                  {paginatedTodos.map((todo: any) => (
-                    <TableRow key={todo.id}>
+                  {paginatedTodos.map((todo: any, index: number) => (
+                    <TableRow key={index}>
                       <TableCell>{todo.id}</TableCell>
                       <TableCell>
                         <Typography variant="h6">{todo.title}</Typography>
